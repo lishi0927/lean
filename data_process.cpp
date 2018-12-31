@@ -1,15 +1,16 @@
 #include "data_process.h"
 
+
 vector<float> read_file_doubles(const string &filename) {
 	FILE *f = fopen(filename.c_str(), "rt");
 	if (!f) { fprintf(stderr, "could not read %s\n", filename.c_str()); exit(1); }
 	vector<float> ans;
 	while (1) {
-		float value = 0.0;
+		double value = 0.0;
 		if (fscanf(f, "%lf", &value) != 1) {
 			break;
 		}
-		ans.push_back(value);
+		ans.push_back(float(value));
 		if (feof(f)) { break; }
 	}
 	fclose(f);

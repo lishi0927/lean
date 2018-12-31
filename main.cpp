@@ -27,14 +27,15 @@ Camera m_camera;
 #define TextureWidth 1024
 #define TextureHeight 1024
 
-#define pi 3.1415926
 
 LeanShader m_leanshader;
 BaseShader m_baseshader;
-Mesh m_teapot;
+BaseMesh m_teapot;
 GLuint m_colortex, m_normaltex, m_bumptex, m_bumpvartex;
 
 glm::vec3 lightdir;
+bool flag;
+float maxscale;
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS)
@@ -45,6 +46,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 
 	if (keys[GLFW_KEY_ESCAPE])
 		exit(0);
+	else if (keys[GLFW_KEY_K])
+	{
+		flag = !flag;
+	}
 }
 
 void mousecallback(GLFWwindow* window, double xpos, double ypos) {
@@ -59,6 +64,18 @@ void InitLeanShader()
 	m_leanshader.Init();
 	vector<float> bump = read_file_doubles("teapot/bump_data");
 	vector<float> bump_var = read_file_doubles("teapot/bump_variance_data");
+
+	FILE *f = fopen("teapot/maxscale", "rt");
+
+	while (1) {
+		double value = 0.0;
+		if (fscanf(f, "%lf", &value) != 1) {
+			break;
+		}
+		maxscale = value;
+		if (feof(f)) { break; }
+	}
+	fclose(f);
 
 	glGenTextures(1, &m_bumptex);
 	glBindTexture(GL_TEXTURE_2D, m_bumptex);
@@ -87,10 +104,12 @@ void InitBaseShader()
 {
 	m_baseshader.Init();
 	m_normaltex = loadTexture("teapot/185_norm.png");
+	flag = false;
 }
 
 void Init()
 {
+	InitLeanShader();
 	InitBaseShader();
 	m_teapot.LoadMesh("teapot/teapot.obj");
 	m_teapot.init();
@@ -105,7 +124,7 @@ void Init()
 
 	m_camera.SetPerspective(glm::radians(60.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01, 100000);
 
-	m_camera.PositionCamera(0, 60, -1100, glm::radians(180.0f), glm::radians(0.0f));
+	m_camera.PositionCamera(0.0, 0.0, 60.0, glm::radians(0.0f), glm::radians(0.0f));
 }
 
 void RenderBaseShader()
@@ -117,6 +136,7 @@ void RenderBaseShader()
 	m_baseshader.SetWorldMatrix(glm::mat4(1.0));
 	m_baseshader.SetCameraPos(m_camera.GetPosition());
 	m_baseshader.SetLightDirection(lightdir);
+	m_baseshader.SetSSAAflag(flag);
 	
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
@@ -138,6 +158,7 @@ void RenderLeanShader()
 	m_leanshader.SetWorldMatrix(glm::mat4(1.0));
 	m_leanshader.SetCameraPos(m_camera.GetPosition());
 	m_leanshader.SetLightDirection(lightdir);
+	m_leanshader.SetMaxscale(maxscale);
 
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
@@ -148,7 +169,7 @@ void RenderLeanShader()
 	glBindTexture(GL_TEXTURE_2D, m_bumptex);
 
 	glEnable(GL_TEXTURE_2D);
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, m_bumpvartex);
 }
 
@@ -160,7 +181,102 @@ void render()
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+	glEnable(GL_MULTISAMPLE);
+
 	RenderBaseShader();
 
 	m_teapot.render(0);
+
+/*	glViewport(0.5*WINDOW_WIDTH, 0, 0.5*WINDOW_WIDTH, WINDOW_HEIGHT);*/
+
+//	RenderLeanShader();
+
+//	m_teapot.render(0);
+}
+
+int main()
+{
+	if (!glfwInit())
+	{
+		fprintf(stderr, "Failed to initialize GLFW\n");
+		getchar();
+		return -1;
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 2048);
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Bezier Patch", NULL, NULL);
+	if (window == NULL) {
+		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+		getchar();
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
+							 // Initialize GLEW
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		getchar();
+		glfwTerminate();
+		return -1;
+	}
+
+	// Hide the mouse and enable unlimited mouvement
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(window, keyCallback);
+	//glfwSetCursorPosCallback(window, mousecallback);
+
+	//vsync
+
+	typedef BOOL(APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
+
+	PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+	//wglSwapIntervalEXT(1);
+	wglSwapIntervalEXT(0);
+
+	memset(keys, 0, sizeof(keys));
+
+	Init();
+
+	GLfloat lastTime = glfwGetTime();
+	GLfloat currentTime;
+
+	int frame_count = 1;
+
+	glfwSetCursorPos(window, 1024 / 2, 720 / 2);
+
+
+	do {
+		// Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glfwPollEvents();
+
+		currentTime = glfwGetTime();
+
+		m_camera.CameraKeyMove(keys, currentTime - lastTime);
+		render();
+		lastTime = currentTime;
+
+		// Swap buffers
+		glfwSwapBuffers(window);
+		frame_count++;
+
+	} // Check if the ESC key was pressed or the window was closed
+	while (glfwWindowShouldClose(window) == 0);
+
+	// Close OpenGL window and terminate GLFW
+	glfwTerminate();
+
+	return 0;
 }

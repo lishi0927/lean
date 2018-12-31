@@ -1,0 +1,15 @@
+﻿  main.cpp
+d:\shading\leanmapping\leanmapping\camera.h(54): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\shading\leanmapping\leanmapping\camera.h(61): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(57): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+main.cpp(75): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(125): warning C4305: 'argument': truncation from 'double' to 'float'
+main.cpp(252): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+main.cpp(265): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+  Generating code
+  17 of 608 functions ( 2.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Leanmapping.vcxproj -> D:\shading\Leanmapping\x64\Release\Leanmapping.exe
+  Leanmapping.vcxproj -> D:\shading\Leanmapping\x64\Release\Leanmapping.pdb (Full PDB)

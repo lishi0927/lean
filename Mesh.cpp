@@ -166,30 +166,11 @@ void BaseMesh::InitVertices()
 
 void BaseMesh::init()
 {
-
-}
-
-Mesh::Mesh()
-{
-
-}
-
-
-Mesh::~Mesh()
-{
-	
-}
-
-
-
-void Mesh::init()
-{
-	m_shader.Init();
-
 	InitVertices();
 }
 
-void Mesh::render(int state)
+
+void BaseMesh::render(int state)
 {
 	if (state == 0)
 	{
@@ -254,104 +235,3 @@ void Mesh::render(int state)
 		glUseProgram(0);
 	}
 }
-
-DisMesh::DisMesh()
-{
-	bias = 0.0;
-	scale = 0.0;
-}
-
-DisMesh::~DisMesh()
-{
-	
-}
-
-void DisMesh::init()
-{
-	if(!nortexname.empty())m_nortex = loadDDS(nortexname.c_str());
-	if(!distexname.empty())m_distex = loadDDS(distexname.c_str());
-	if(!paraname.empty())
-	{
-		fstream f(paraname.c_str());
-		char line[256];
-		float f1;
-		f.getline(line, 255);
-		if (sscanf(line, "DisplacementMap Scale: %f", &f1) == 1)
-		{
-			scale = f1;
-		}
-		f.getline(line, 255);
-		if (sscanf(line, "DisplacementMap Bias : %f", &f1) == 1)
-		{
-			bias = f1;
-		}
-	}
-	m_shader.Init();
-	m_shader.Enable();
-	m_shader.SetDisTex(0);
-	m_shader.SetNormalTex(1);
-	m_shader.SetBias(bias);
-	m_shader.SetScale(scale);
-
-	m_shader.Disable();
-	InitVertices();
-}
-
-void DisMesh::SetNormalTextureName(std::string name)
-{
-	nortexname = name;
-}
-
-void DisMesh::SetDisTextureName(std::string name)
-{
-	distexname = name;
-}
-
-void DisMesh::SetParaName(std::string name)
-{
-	paraname = name;
-}
-
-void DisMesh::render()
-{
-	glEnable(GL_TEXTURE_2D);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_distex);
-
-	glEnable(GL_TEXTURE_2D);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_nortex);
-
-	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glVertexAttribPointer(
-		0,                  // attribute
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	// 2nd attribute buffer : UVs
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glVertexAttribPointer(
-		1,                                // attribute
-		2,                                // size
-		GL_FLOAT,                         // type
-		GL_FALSE,                         // normalized?
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
-
-	// Draw the triangle !
-	glDrawArrays(GL_PATCHES, 0, vertices.size());
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
-	glUseProgram(0);
-}
-

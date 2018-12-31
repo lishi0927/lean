@@ -29,6 +29,8 @@ public:
 
 	glm::vec3 m_center;
 
+	void render(int state);
+
 protected:
 	int m_facenumber;
 	std::vector<glm::vec3> m_vertices;
@@ -42,43 +44,7 @@ protected:
 	std::vector<glm::vec3> normals;
 };
 
-class Mesh : public BaseMesh{
-public:
-	Mesh();
-	~Mesh();
 
-	void render(int state);
-
-	virtual void init();
-
-	OriShader m_shader;	
-};
-
-class DisMesh : public BaseMesh
-{
-public:
-	DisMesh();
-	~DisMesh();
-
-	virtual void init();
-	void render();
-
-	TessShader m_shader;
-
-	void SetNormalTextureName(std::string name);
-	void SetDisTextureName(std::string name);
-	void SetParaName(std::string name);
-
-private:
-	std::string nortexname;
-	std::string distexname;
-	std::string paraname;
-
-	GLuint m_nortex;
-	GLuint m_distex;
-
-	float scale, bias;
-};
 
 
 #endif

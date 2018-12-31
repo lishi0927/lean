@@ -11,7 +11,7 @@ out vec3 WorldPos;
 
 void main()
 {
-  WorldPos = gWorldMatrix * vec4(Position_VS_in, 1.0).xyz;
+  WorldPos = (gWorldMatrix * vec4(Position_VS_in, 1.0)).xyz;
   gl_Position = gVPMatrix * vec4(WorldPos, 1.0);
 
   TexCoord_FS_in = TexCoord_VS_in;

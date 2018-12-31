@@ -20,6 +20,8 @@ public:
 
 	void SetLightDirection(const glm::vec3 &light);
 
+	void SetSSAAflag(bool flag);
+
 private:
 	GLuint m_VPLocation;
 	GLuint m_WorldLocation;
@@ -27,6 +29,7 @@ private:
 	GLuint m_lightdir;
 	GLuint m_colorLocation;
 	GLuint m_normalLocation;
+	GLuint m_flag;
 };
 
 class LeanShader : public ShaderUniform {

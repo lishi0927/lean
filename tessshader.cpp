@@ -17,6 +17,8 @@ bool BaseShader::Init()
 
 	m_normalLocation = glGetUniformLocation(shader, "normaltex");
 
+	m_flag = glGetUniformLocation(shader, "ssflag");
+
 	return true;
 }
 
@@ -48,6 +50,11 @@ void BaseShader::SetColorTex(unsigned int TextureUnit)
 void BaseShader::SetNormalTex(unsigned int TextureUnit)
 {
 	glUniform1i(m_normalLocation, TextureUnit);
+}
+
+void BaseShader::SetSSAAflag(bool flag)
+{
+	glUniform1i(m_flag, flag);
 }
 
 bool LeanShader::Init()

@@ -9,10 +9,11 @@
 #include <cassert>
 #include <functional>
 #include <vector>
+#include <string>
 using namespace std;
 
 vector<float> read_file_doubles(const string &filename);
 
-vector<vector<float>> read_file_doubles_mipmap(const string &filename, int width, int height, int bit, int mipmap)
+vector<vector<float>> read_file_doubles_mipmap(const string &filename, int width, int height, int bit, int mipmap);
 
 #endif

@@ -99,17 +99,49 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\terrain\external\FreeImage;D:\terrain\external;D:\terrain\external\glew-1.13.0\include;D:\terrain\external\glfw-3.1.2\include\GLFW;D:\terrain\external\glm-0.9.7.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/D_CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\terrain\external\FreeImage\lib\x64;D:\terrain\external\glew-1.13.0\lib\Release\x64;D:\terrain\external\glfw-3.1.2\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glew32.lib;glew32s.lib;glu32.lib;opengl32.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="data_process.cpp" />
+    <ClCompile Include="dds_reader.cpp" />
+    <ClCompile Include="framebuffer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="tessshader.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="transformshader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="data_process.h" />
+    <ClInclude Include="dds_reader.h" />
+    <ClInclude Include="framebuffer.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="shaderuniform.h" />
+    <ClInclude Include="tessshader.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="transformshader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\basefrag.glsl" />
+    <None Include="shader\basevert.glsl" />
+    <None Include="shader\leanfrag.glsl" />
+    <None Include="shader\leanvert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
